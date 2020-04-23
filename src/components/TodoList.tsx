@@ -3,9 +3,21 @@ import { ITodo } from '../interfaces';
 
 type TodoListProps = {
   todos: ITodo[];
+  onToggle(id: number): void;
+  onRemove?(id: number): void;
 };
 
-export const TodoList: React.FC<TodoListProps> = ({ todos }) => {
+export const TodoList: React.FC<TodoListProps> = ({ todos, onRemove, onToggle }) => {
+  if (todos.length === 0) {
+    return <p>Nothing</p>;
+  }
+
+  const removeHandler = (event: React.MouseEvent, id: number) => {
+    event.preventDefault();
+
+    onRemove!(id);
+  };
+
   return (
     <ul>
       {todos.map((todo) => {
@@ -17,10 +29,12 @@ export const TodoList: React.FC<TodoListProps> = ({ todos }) => {
 
         return (
           <li className={classes.join(' ')} key={todo.id}>
-            <label htmlFor="">
-              <input type="checkbox" checked={todo.completed} />
+            <label>
+              <input type="checkbox" checked={todo.completed} onClick={() => onToggle(todo.id)} />
               <span>{todo.title}</span>
-              <i className="material-icons red-text">delete</i>
+              <i className="material-icons red-text" onClick={(event) => removeHandler(event, todo.id)}>
+                delete
+              </i>
             </label>
           </li>
         );
